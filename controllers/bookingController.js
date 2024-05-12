@@ -22,9 +22,22 @@ const createBooking = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("No puedes reservar tu propio auto");
   }
-  if (check.length > 0 && !checkDisponibility(check, startingDate, endingDate)) {
+
+  if (!checkDate(startingDate, endingDate)) {
     res.status(400);
-    throw new Error("El auto no está disponible en las fechas seleccionadas");
+    throw new Error(
+      "Las fechas seleccionadas no son válidas, deben ser mayor a la fecha actual"
+    );
+  }
+
+  if (
+    check.length > 0 &&
+    !checkDisponibility(check, startingDate, endingDate)
+  ) {
+    res.status(400);
+    throw new Error(
+      "El auto ya se encuentra reservado en las fechas seleccionadas"
+    );
   }
 
   const booking = await Booking.create({
@@ -68,18 +81,26 @@ const deleteBooking = asyncHandler(async (req, res) => {
 });
 
 const checkDisponibility = (reservas, start, end) => {
+  const starting = new Date(start);
+  const ending = new Date(end);
   for (let reserva of reservas) {
     if (
-      new Date(start) < new Date(reserva.endingDate) &&
-      new Date(end) > new Date(reserva.startingDate)
+      starting < new Date(reserva.endingDate) &&
+      ending > new Date(reserva.startingDate)
     ) {
       return false;
     }
   }
-  if (new Date(start) <  new Date() || new Date(end)  <  new Date() ) {
+  return true;
+};
+
+const checkDate = (start, end) => {
+  const starting = new Date(start);
+  const ending = new Date(end);
+  const today = new Date();
+  if (starting < today || ending < today) {
     return false;
   }
-
   return true;
 };
 

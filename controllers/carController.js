@@ -3,9 +3,9 @@ const Car = require("../models/carModel");
 
 const getCars = asyncHandler(async (req, res) => {
   let cars;
-  if(req.user){
-    cars = await Car.find({ owner: {$ne: req.user._id}});
-  }else{
+  if (req.user) {
+    cars = await Car.find({ owner: { $ne: req.user._id } });
+  } else {
     cars = await Car.find();
   }
   res.status(200).json(cars.length > 0 ? cars : { message: "No hay carros" });
@@ -22,6 +22,7 @@ const createCar = asyncHandler(async (req, res) => {
     pricePerDay,
     location,
     insurance,
+    image,
   } = req.body;
   if (
     !req.user.isOwner ||
@@ -33,7 +34,8 @@ const createCar = asyncHandler(async (req, res) => {
     !capacity ||
     !pricePerDay ||
     !location ||
-    !insurance
+    !insurance ||
+    !image
   ) {
     res.status(400);
     throw new Error("No fue posible crear el automovil");
@@ -49,6 +51,7 @@ const createCar = asyncHandler(async (req, res) => {
     pricePerDay,
     location,
     insurance,
+    image,
   });
   res.status(201).json(car);
 });

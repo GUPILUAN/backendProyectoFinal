@@ -44,6 +44,10 @@ const carSchema = mongoose.Schema(
       type: String,
       required: [true, "Por favor teclea un seguro"],
     },
+    image: {
+      type: String,
+      required: [true, "Por favor teclea una url de imagen"],
+    },
   },
   { timestamps: true }
 );
